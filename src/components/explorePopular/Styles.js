@@ -9,7 +9,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.foreground
     },
     title: {
-        fontWeight: "bold",
+        // fontWeight: "bold",
+        fontSize:20,
         color:colors.black,
         marginHorizontal: 15,
         marginVertical: 30
@@ -21,7 +22,11 @@ const styles = StyleSheet.create({
     },
     footerText:{
         color:colors.black,
-
+    },
+    filterButton: {
+        width:"40%",
+        marginHorizontal: 15,
+        marginBottom: 20
     }
 
 }

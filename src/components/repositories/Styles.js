@@ -9,27 +9,39 @@ const styles = StyleSheet.create({
         backgroundColor: colors.foreground
     },
     title: {
-        fontWeight: "bold",
-        color:colors.black,
+        // fontWeight: "bold",
+        fontSize: 20,
+        color: colors.black,
         marginHorizontal: 15,
-        marginVertical: 30
+        marginVertical: 30,
+
     },
-    footerContainer:{
-        paddingVertical:20,
-        paddingHorizontal:20,
-        flexDirection:"row"
+    footerContainer: {
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        flexDirection: "row"
     },
-    footerText:{
-        color:colors.black,
+    footerText: {
+        color: colors.black,
     },
     starSectionContainer: {
         flexDirection: "row",
     },
-    starText:{
+    starText: {
         color: colors.black,
-        marginHorizontal:5
+        marginHorizontal: 5
     },
+    filtersContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginHorizontal: 10,
+        marginBottom: 20
 
+    },
+    filterButton: {
+        flex: 1,
+        marginHorizontal: 5
+    }
 
 }
 )

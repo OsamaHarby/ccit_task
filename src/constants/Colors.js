@@ -5,5 +5,7 @@ export default colors ={
     black:"#000000",
     white:"#ffffff",
     text:"#7B848D",
-    border:"#CCD4DD5E"
+    border:"#CCD4DD5E",
+    grey:"#CCD4DD",
+    darkGrey:"#7B848D"
 }

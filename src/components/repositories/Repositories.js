@@ -1,11 +1,22 @@
-import { FlatList, Text, View } from "react-native"
+import { Button, FlatList, Text, View } from "react-native"
 import styles from "./Styles"
 import RepositoryCard from "../repositoryCard/RepositoryCard"
 import Colors from "../../constants/Colors"
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import OcticonsIcon from 'react-native-vector-icons/Octicons';
+import { useState } from "react";
+import LanguagesFilterModal from "../languageFilterModal/LanguageFilterModal";
+import FilterButton from "../filterButton/FilterButton";
 
 export default Repositories = () => {
+    const [isModalVisible, setModalVisible] = useState(false);
+    const openModal = () => {
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+    };
     const renderFooter = (data) => {
         return (
             <View style={styles.footerContainer}>
@@ -39,6 +50,22 @@ export default Repositories = () => {
             <Text style={styles.title}>
                 Repositories
             </Text>
+            <View style={styles.filtersContainer}>
+                <FilterButton
+                    label={"Language"}
+                    value={"any"}
+                    onPress={openModal}
+                    style={styles.filterButton}
+                />
+
+                <FilterButton
+                    label={"Date"}
+                    value={"4 Feb 22"}
+                    onPress={() => { }}
+                    style={styles.filterButton}
+                />
+            </View>
+
             <FlatList
                 data={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 },]}
                 renderItem={item => <RepositoryCard
@@ -48,6 +75,11 @@ export default Repositories = () => {
                 keyExtractor={item => item.id}
             >
             </FlatList>
+            <LanguagesFilterModal
+                isVisible={isModalVisible}
+                onClose={closeModal}
+                languages={["C++", "Java", "JavaScript", "HTML", "PHP", "Python", "Swift", "Ruby", "TypeScript"]}
+            />
         </View>
     )
 }
