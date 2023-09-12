@@ -5,7 +5,7 @@ import Colors from "../../constants/Colors";
 import FastImage from 'react-native-fast-image'
 
 const RepositoryCard = ({ data, isShowImage,isShowHeader, renderFooter }) => {
-    const renderHeader = (data) => {
+    const renderHeader = () => {
         return (
             <View style={styles.headerContainer}>
                 <Text style={styles.headerTrendingText}>
@@ -22,7 +22,7 @@ const RepositoryCard = ({ data, isShowImage,isShowHeader, renderFooter }) => {
 
                     <View style={styles.numbersContainer}>
                         <Text style={styles.numbersText}>
-                            40.5K
+                            {data.stargazers_count}
                         </Text>
                     </View>
 
@@ -50,12 +50,12 @@ const RepositoryCard = ({ data, isShowImage,isShowHeader, renderFooter }) => {
             <View style={styles.repoInfoContainer}>
                 <View style={styles.titleContainer}>
                     <Icon name="book" size={26} color={Colors.primary} />
-                    <Text style={styles.title}>
-                        Repository name/test
+                    <Text style={styles.title} numberOfLines={2}>
+                       {data?.full_name}
                     </Text>
                 </View>
-                <Text style={styles.descStyle}>
-                    test desc test desc test desc test desc test desc test desc test desc test desc test desc
+                <Text style={styles.descStyle}numberOfLines={2}>
+                    {data?.description}
                 </Text>
             </View>
             {renderFooter()}

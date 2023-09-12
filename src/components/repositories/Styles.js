@@ -41,7 +41,9 @@ const styles = StyleSheet.create({
     filterButton: {
         flex: 1,
         marginHorizontal: 5
-    }
+    },
+    languageContainer: { flex: 1 }
+
 
 }
 )

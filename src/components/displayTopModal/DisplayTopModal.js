@@ -14,7 +14,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import styles from './Styles';
 
 
-const DisplayTopModal = ({ isVisible, onClose, data }) => {
+const DisplayTopModal = ({ isVisible, onClose, data ,onSelect}) => {
 
     return (
         <Modal
@@ -35,14 +35,15 @@ const DisplayTopModal = ({ isVisible, onClose, data }) => {
                     <ScrollView>
                     {data.map((item) => (
                         <TouchableOpacity
-                            key={item}
+                            key={item.value}
                             onPress={() => {
+                                onSelect(item)
                                 onClose()
 
                             }}
                             style={styles.itemContainer}
                         >
-                            <Text style={styles.textItem}>{item}</Text>
+                            <Text style={styles.textItem}>{item.name}</Text>
                         </TouchableOpacity>
                     ))}
                     </ScrollView>

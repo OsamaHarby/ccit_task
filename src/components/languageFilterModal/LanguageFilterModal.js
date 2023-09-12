@@ -14,7 +14,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import styles from './Styles';
 
 
-const LanguagesFilterModal = ({ isVisible, onClose, languages }) => {
+const LanguagesFilterModal = ({ isVisible, onClose, languages,onSelect }) => {
     const [searchText, setSearchText] = useState('');
 
     const filteredLanguages = languages.filter((language) =>
@@ -54,6 +54,7 @@ const LanguagesFilterModal = ({ isVisible, onClose, languages }) => {
                             key={language}
                             onPress={() => {
                                 // Handle language selection here
+                                onSelect(language)
                                 onClose()
 
                             }}

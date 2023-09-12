@@ -7,5 +7,6 @@ export default colors ={
     text:"#7B848D",
     border:"#CCD4DD5E",
     grey:"#CCD4DD",
-    darkGrey:"#7B848D"
+    darkGrey:"#7B848D",
+    error:"red"
 }
