@@ -19,11 +19,7 @@ const getRepositories = async ({ per_page, language, date ,page}) => {
         languageFilter = `&q=language:${lowerCaseLanguage}`
     }
     try {
-        const res = await axios.get(`${BASE_URL}search/repositories?${dateFilter}${languageFilter}&sort=stars&order=desc&per_page=${per_page}&page=${page}`,{
-            headers:{
-                Authorization:"Bearer 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"
-            }
-        });
+        const res = await axios.get(`${BASE_URL}search/repositories?${dateFilter}${languageFilter}&sort=stars&order=desc&per_page=${per_page}&page=${page}`);
         // console.log("response", res);
 
         if (res?.status === 200) {
