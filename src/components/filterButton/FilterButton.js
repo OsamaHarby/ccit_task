@@ -1,4 +1,4 @@
-import { Dimensions, Text, TouchableOpacity, View } from "react-native"
+import {  Text, TouchableOpacity, View } from "react-native"
 import styles from "./Styles"
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Colors from "../../constants/Colors";

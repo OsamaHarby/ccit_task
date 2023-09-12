@@ -1,4 +1,4 @@
-import { Dimensions, Text, View } from "react-native"
+import {  Text, View } from "react-native"
 import styles from "./Styles"
 import Icon from 'react-native-vector-icons/AntDesign';
 import Colors from "../../constants/Colors";

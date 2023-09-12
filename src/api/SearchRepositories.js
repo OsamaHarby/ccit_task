@@ -1,7 +1,5 @@
 import axios from 'axios';
 import { BASE_URL } from './urls';
-import Snackbar from 'react-native-snackbar';
-import Colors from '../constants/Colors';
 import { showError } from '../helpers/SnackbarNotifications';
 import moment from 'moment';
 
@@ -22,14 +20,14 @@ const getRepositories = async ({ per_page, language, date ,page}) => {
     }
     try {
         const res = await axios.get(`${BASE_URL}search/repositories?${dateFilter}${languageFilter}&sort=stars&order=desc&per_page=${per_page}&page=${page}`);
-        console.log("response", res);
+        // console.log("response", res);
 
         if (res?.status === 200) {
             return res.data;
         }
 
     } catch (error) {
-        console.log('getRepositories error', error);
+        // console.log('getRepositories error', error);
         showError(error)
     }
 };

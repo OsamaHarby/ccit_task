@@ -4,12 +4,8 @@ import {
     Text,
     TouchableOpacity,
     Modal,
-    StyleSheet,
-    TextInput,
     ScrollView,
-    Dimensions,
 } from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import styles from './Styles';
 

@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Text, View } from "react-native"
+import { ActivityIndicator, Button, FlatList, Text, View } from "react-native"
 import styles from "./Styles"
 import RepositoryCard from "../repositoryCard/RepositoryCard"
 import FilterButton from "../filterButton/FilterButton"
@@ -17,6 +17,7 @@ export default ExplorePopular = () => {
         data: [],
         isLoading: true
     })
+    const [isError, setIsError] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
     const [displaytop, setDisplayTop] = useState(DISPLAY_TOP_DATA[0])
 
@@ -29,12 +30,18 @@ export default ExplorePopular = () => {
     };
 
     const handleGetRepositories = async () => {
-        setContent(prevState => ({ ...prevState, isLoading: true }))
-        const response = await getRepositories({ per_page: displaytop.value })
-        if (response) {
-            setContent({ data: response.items, isLoading: false })
-        } else {
-            setContent(prevState => ({ ...prevState, isLoading: false }))
+        setIsError(false)
+        try {
+            setContent(prevState => ({ data: prevState.data, isLoading: true }))
+            const response = await getRepositories({ per_page: displaytop.value })
+            if (response) {
+                setContent({ data: response.items, isLoading: false })
+            } else {
+                setContent(prevState => ({ data: prevState.data, isLoading: false }))
+                setIsError(true)
+            }
+        } catch (error) {
+            setIsError(true)
         }
     }
     useEffect(() => {
@@ -66,20 +73,28 @@ export default ExplorePopular = () => {
                 onPress={openModal}
                 style={styles.filterButton}
             />
-            {content?.isLoading ?
-                <ActivityIndicator color={Colors.primary} />
-                :
-                <FlatList
-                    data={content.data}
-                    renderItem={({ item, index }) => <RepositoryCard
-                        data={item}
-                        // isShowImage={true}
-                        isShowHeader={true}
-                        renderFooter={() => renderFooter(item)}
-                    />}
-                    keyExtractor={item => item.id}
-                >
-                </FlatList>
+            {isError ?
+                <View style={styles.retryBtnContainer}>
+                    <Button
+                        title="Retry"
+                        color={Colors.primary}
+                        onPress={handleGetRepositories}
+                    />
+                </View>
+                : content?.isLoading ?
+                    <ActivityIndicator color={Colors.primary} />
+                    :
+                    <FlatList
+                        data={content.data}
+                        renderItem={({ item, index }) => <RepositoryCard
+                            data={item}
+                            // isShowImage={true}
+                            isShowHeader={true}
+                            renderFooter={() => renderFooter(item)}
+                        />}
+                        keyExtractor={item => item.id}
+                    >
+                    </FlatList>
             }
             <DisplayTopModal
                 isVisible={isModalVisible}

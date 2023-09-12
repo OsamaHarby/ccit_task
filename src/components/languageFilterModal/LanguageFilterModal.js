@@ -4,14 +4,14 @@ import {
     Text,
     TouchableOpacity,
     Modal,
-    StyleSheet,
     TextInput,
     ScrollView,
-    Dimensions,
 } from 'react-native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import styles from './Styles';
+import { useDispatch } from 'react-redux';
+import { setLanguageFilter } from '../../actions';
 
 const LanguagesFilterModal = ({ isVisible, onClose, languages, onSelect }) => {
     const [searchText, setSearchText] = useState('');
@@ -20,6 +20,12 @@ const LanguagesFilterModal = ({ isVisible, onClose, languages, onSelect }) => {
         language.toLowerCase().includes(searchText.toLowerCase())
     ), [searchText]);
 
+    const dispatch = useDispatch();
+
+    const handleSelectLanguage = async (language) => {
+        await setLanguageFilter(language)(dispatch)
+        onClose()
+    }
     return (
         <Modal
             visible={isVisible}
@@ -50,10 +56,7 @@ const LanguagesFilterModal = ({ isVisible, onClose, languages, onSelect }) => {
                         {filteredLanguages.map((language) => (
                             <TouchableOpacity
                                 key={language}
-                                onPress={() => {
-                                    onSelect(language)
-                                    onClose()
-                                }}
+                                onPress={()=>handleSelectLanguage(language)}
                                 style={styles.languageItem}
                             >
                                 <Text style={styles.textItem}>{language}</Text>

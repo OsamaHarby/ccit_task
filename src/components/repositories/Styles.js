@@ -45,14 +45,15 @@ const styles = StyleSheet.create({
     languageContainer: { flex: 1 },
     retryBtnContainer: {
         alignSelf: "center",
-        marginTop:5,
-        marginBottom:15
+        marginTop: 5,
+        marginBottom: 15
 
     },
     retryBtn: {
         alignSelf: "center",
 
-    }
+    },
+    loadingContainer: { paddingVertical: 10 }
 
 
 }

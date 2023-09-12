@@ -10,18 +10,17 @@ import FilterButton from "../filterButton/FilterButton";
 import DatePicker from 'react-native-date-picker'
 import moment from "moment";
 import getRepositories from "../../api/SearchRepositories";
+import { useSelector } from "react-redux";
 
 export default Repositories = () => {
-
+    const selectedLanguage = useSelector(state => state.languageReducer.language)
     const [data, setData] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
     const [date, setDate] = useState(new Date("2019-01-10"))
     const [open, setOpen] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
-    const [selectedLanguage, setSelectedLanguage] = useState("")
     const [hasMoreData, setHasMoreData] = useState(true); // Flag to indicate if there's more data to fetch
 
     const openModal = () => {
@@ -32,7 +31,7 @@ export default Repositories = () => {
         setModalVisible(false);
     };
 
-    const handleGetRepositories = async () => {
+    const handleGetRepositories = async (isGetFirstPage) => {
         if (
             isLoading
             || (totalPages !== null && page > totalPages)
@@ -42,33 +41,33 @@ export default Repositories = () => {
         }
         setIsLoading(true);
         try {
-            const response = await getRepositories({ per_page: 10, language: selectedLanguage, date, page })
+            const response = await getRepositories({ per_page: 10, language: selectedLanguage, date, page: isGetFirstPage ? 1 : page })
             if (response) {
-                if (page === 1) {
+                if (page === 1 || isGetFirstPage) {
                     setData(response.items);
                 } else {
                     setData([...data, ...response.items]);
                 }
                 setTotalPages(response.total_count);
-                setPage(page + 1);
+                setPage(isGetFirstPage?2: page + 1);
             } else {
                 setHasMoreData(false);
             }
         } catch (error) {
-            console.log(error);
             setHasMoreData(false);
         } finally {
             setIsLoading(false);
         }
     }
-    const resetToGetFirstPage = ()=>{
+    const resetToGetFirstPage = () => {
         setHasMoreData(true); // Reset the flag to allow pagination retry
         setPage(1)
         setData([])
     }
 
     useEffect(() => {
-        handleGetRepositories()
+        resetToGetFirstPage()
+        handleGetRepositories(true)
     }, [selectedLanguage, date])
 
     const renderFooter = (item) => {
@@ -101,8 +100,8 @@ export default Repositories = () => {
     const renderListFooter = () => {
         if (isLoading) {
             return (
-                <View style={{ paddingVertical: 10 }}>
-                    <ActivityIndicator />
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator color={Colors.primary} />
                 </View>
             );
         } else if (!hasMoreData) {
@@ -113,7 +112,7 @@ export default Repositories = () => {
                         color={Colors.primary}
                         onPress={() => {
                             resetToGetFirstPage()
-                            handleGetRepositories(); // Retry pagination
+                            handleGetRepositories(true); 
                         }}
                     />
                 </View>
@@ -143,7 +142,6 @@ export default Repositories = () => {
             </View>
             <FlatList
                 data={data}
-                // style={{flex:1}}
                 renderItem={({ item, index }) => <RepositoryCard
                     data={item}
                     renderFooter={() => renderFooter(item)}
@@ -179,13 +177,6 @@ export default Repositories = () => {
             <LanguagesFilterModal
                 isVisible={isModalVisible}
                 onClose={closeModal}
-                onSelect={v => {
-                    if (v !== selectedLanguage) {
-                        resetToGetFirstPage()
-                        setSelectedLanguage(v)
-                    }
-                }
-                }
                 languages={["C++", "Java", "JavaScript", "HTML", "PHP", "Python", "Swift", "Ruby", "TypeScript", "Go"]}
             />
         </View>
