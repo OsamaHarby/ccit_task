@@ -31,7 +31,6 @@ export default ExplorePopular = () => {
     const handleGetRepositories = async () => {
         setContent(prevState => ({ ...prevState, isLoading: true }))
         const response = await getRepositories({ per_page: displaytop.value })
-        // console.log("response", response);
         if (response) {
             setContent({ data: response.items, isLoading: false })
         } else {

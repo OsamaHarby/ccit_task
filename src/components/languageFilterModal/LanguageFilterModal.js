@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
     View,
     Text,
@@ -13,13 +13,12 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import styles from './Styles';
 
-
-const LanguagesFilterModal = ({ isVisible, onClose, languages,onSelect }) => {
+const LanguagesFilterModal = ({ isVisible, onClose, languages, onSelect }) => {
     const [searchText, setSearchText] = useState('');
 
-    const filteredLanguages = languages.filter((language) =>
+    const filteredLanguages = useMemo(() => languages.filter((language) =>
         language.toLowerCase().includes(searchText.toLowerCase())
-    );
+    ), [searchText]);
 
     return (
         <Modal
@@ -46,23 +45,20 @@ const LanguagesFilterModal = ({ isVisible, onClose, languages,onSelect }) => {
                             />
                             <FeatherIcon name="search" style={styles.searchIcon} />
                         </View>
-
                     </View>
                     <ScrollView>
-                    {filteredLanguages.map((language) => (
-                        <TouchableOpacity
-                            key={language}
-                            onPress={() => {
-                                // Handle language selection here
-                                onSelect(language)
-                                onClose()
-
-                            }}
-                            style={styles.languageItem}
-                        >
-                            <Text style={styles.textItem}>{language}</Text>
-                        </TouchableOpacity>
-                    ))}
+                        {filteredLanguages.map((language) => (
+                            <TouchableOpacity
+                                key={language}
+                                onPress={() => {
+                                    onSelect(language)
+                                    onClose()
+                                }}
+                                style={styles.languageItem}
+                            >
+                                <Text style={styles.textItem}>{language}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </ScrollView>
                 </View>
             </View>

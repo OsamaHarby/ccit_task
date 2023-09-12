@@ -42,7 +42,17 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 5
     },
-    languageContainer: { flex: 1 }
+    languageContainer: { flex: 1 },
+    retryBtnContainer: {
+        alignSelf: "center",
+        marginTop:5,
+        marginBottom:15
+
+    },
+    retryBtn: {
+        alignSelf: "center",
+
+    }
 
 
 }

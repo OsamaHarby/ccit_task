@@ -10,15 +10,19 @@ import FilterButton from "../filterButton/FilterButton";
 import DatePicker from 'react-native-date-picker'
 import moment from "moment";
 import getRepositories from "../../api/SearchRepositories";
+
 export default Repositories = () => {
-    const [content, setContent] = useState({
-        data: [],
-        isLoading: true
-    })
+
+    const [data, setData] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const [date, setDate] = useState(new Date("2019-01-10"))
     const [open, setOpen] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState("")
+    const [hasMoreData, setHasMoreData] = useState(true); // Flag to indicate if there's more data to fetch
 
     const openModal = () => {
         setModalVisible(true);
@@ -29,41 +33,64 @@ export default Repositories = () => {
     };
 
     const handleGetRepositories = async () => {
-        setContent(prevState => ({ ...prevState, isLoading: true }))
-        const response = await getRepositories({per_page:30,language:selectedLanguage,date})
-        // console.log("response", response);
-
-        if (response) {
-            setContent({ data: response.items, isLoading: false })
-        } else {
-            setContent(prevState => ({ ...prevState, isLoading: false }))
+        if (
+            isLoading
+            || (totalPages !== null && page > totalPages)
+            || !hasMoreData
+        ) {
+            return;
         }
-
+        setIsLoading(true);
+        try {
+            const response = await getRepositories({ per_page: 10, language: selectedLanguage, date, page })
+            if (response) {
+                if (page === 1) {
+                    setData(response.items);
+                } else {
+                    setData([...data, ...response.items]);
+                }
+                setTotalPages(response.total_count);
+                setPage(page + 1);
+            } else {
+                setHasMoreData(false);
+            }
+        } catch (error) {
+            console.log(error);
+            setHasMoreData(false);
+        } finally {
+            setIsLoading(false);
+        }
     }
+    const resetToGetFirstPage = ()=>{
+        setHasMoreData(true); // Reset the flag to allow pagination retry
+        setPage(1)
+        setData([])
+    }
+
     useEffect(() => {
         handleGetRepositories()
-    }, [selectedLanguage,date])
+    }, [selectedLanguage, date])
 
-    const renderFooter = (data) => {
+    const renderFooter = (item) => {
         return (
             <View style={styles.footerContainer}>
                 <View style={styles.languageContainer}>
                     <Text style={styles.footerText} numberOfLines={1}>
-                        {data?.language}
+                        {item?.language}
                     </Text>
                 </View>
                 <View style={styles.starSectionContainer}>
                     <View style={[styles.starSectionContainer, { marginHorizontal: 20, alignItems: "center" }]}>
                         <AntDesignIcon name="staro" size={18} color={Colors.primary} />
                         <Text style={styles.starText}>
-                            {data.stargazers_count}
+                            {item.stargazers_count}
                         </Text>
                     </View>
 
                     <View style={[styles.starSectionContainer, { alignItems: "center" }]}>
                         <OcticonsIcon name="repo-forked" size={18} color={Colors.primary} />
                         <Text style={styles.starText}>
-                            {data.forks_count}
+                            {item.forks_count}
                         </Text>
                     </View>
                 </View>
@@ -71,6 +98,30 @@ export default Repositories = () => {
             </View>
         )
     }
+    const renderListFooter = () => {
+        if (isLoading) {
+            return (
+                <View style={{ paddingVertical: 10 }}>
+                    <ActivityIndicator />
+                </View>
+            );
+        } else if (!hasMoreData) {
+            return (
+                <View style={styles.retryBtnContainer}>
+                    <Button
+                        title="Retry"
+                        color={Colors.primary}
+                        onPress={() => {
+                            resetToGetFirstPage()
+                            handleGetRepositories(); // Retry pagination
+                        }}
+                    />
+                </View>
+
+            )
+        }
+        return null;
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
@@ -79,7 +130,7 @@ export default Repositories = () => {
             <View style={styles.filtersContainer}>
                 <FilterButton
                     label={"Language"}
-                    value={selectedLanguage|| "any"}
+                    value={selectedLanguage || "any"}
                     onPress={openModal}
                     style={styles.filterButton}
                 />
@@ -90,28 +141,36 @@ export default Repositories = () => {
                     style={styles.filterButton}
                 />
             </View>
-            {content?.isLoading ?
-                <ActivityIndicator color={Colors.primary} />
-                :
-                <FlatList
-                    data={content.data}
-                    renderItem={({ item, index }) => <RepositoryCard
-                        data={item}
-                        renderFooter={() => renderFooter(item)}
-                    />}
-                    keyExtractor={item => item.id}
-                >
-                </FlatList>
-            }
+            <FlatList
+                data={data}
+                // style={{flex:1}}
+                renderItem={({ item, index }) => <RepositoryCard
+                    data={item}
+                    renderFooter={() => renderFooter(item)}
+                />}
+                keyExtractor={(item, index) => item.id.toString() + index.toString()}
+                ListFooterComponent={renderListFooter}
+                onEndReached={() => {
+                    if (!isLoading) {
+                        handleGetRepositories()
+                    }
+                }}
+                onEndReachedThreshold={.5}
+            >
+            </FlatList>
+
             <DatePicker
                 modal
                 mode="date"
                 maximumDate={new Date()}
                 open={open}
                 date={date}
-                onConfirm={(date) => {
+                onConfirm={(dateValue) => {
                     setOpen(false)
-                    setDate(date)
+                    if (!moment(date).isSame(dateValue)) {
+                        resetToGetFirstPage()
+                        setDate(dateValue)
+                    }
                 }}
                 onCancel={() => {
                     setOpen(false)
@@ -120,8 +179,14 @@ export default Repositories = () => {
             <LanguagesFilterModal
                 isVisible={isModalVisible}
                 onClose={closeModal}
-                onSelect={setSelectedLanguage}
-                languages={["C++", "Java", "JavaScript", "HTML", "PHP", "Python", "Swift", "Ruby", "TypeScript","Go"]}
+                onSelect={v => {
+                    if (v !== selectedLanguage) {
+                        resetToGetFirstPage()
+                        setSelectedLanguage(v)
+                    }
+                }
+                }
+                languages={["C++", "Java", "JavaScript", "HTML", "PHP", "Python", "Swift", "Ruby", "TypeScript", "Go"]}
             />
         </View>
     )

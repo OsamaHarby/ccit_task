@@ -5,8 +5,7 @@ import Colors from '../constants/Colors';
 import { showError } from '../helpers/SnackbarNotifications';
 import moment from 'moment';
 
-const getRepositories = async ({ per_page, language, date }) => {
-
+const getRepositories = async ({ per_page, language, date ,page}) => {
     let languageFilter = ''
     let dateFilter = ''
     let lowerCaseLanguage = ''
@@ -21,9 +20,8 @@ const getRepositories = async ({ per_page, language, date }) => {
         lowerCaseLanguage = language.toLowerCase()
         languageFilter = `&q=language:${lowerCaseLanguage}`
     }
-
     try {
-        const res = await axios.get(`${BASE_URL}search/repositories?${dateFilter}${languageFilter}&sort=stars&order=desc&per_page=${per_page || 30}`);
+        const res = await axios.get(`${BASE_URL}search/repositories?${dateFilter}${languageFilter}&sort=stars&order=desc&per_page=${per_page}&page=${page}`);
         console.log("response", res);
 
         if (res?.status === 200) {
